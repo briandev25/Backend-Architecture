@@ -1,11 +1,17 @@
 import express from 'express';
 import type {Request,Response} from 'express'
 import User from '../models/userModel.js';
+import validateNewUser from '../schemas/userSchema.js';
 
 const route = express.Router()
 
 route.post('/register', async(req:Request,res:Response) =>{
-     const { username, email, password} = req.body;
+
+     const result = validateNewUser.safeParse(req.body);
+     if(!result.success){
+          return res.status(400).json({error:result.error.flatten()})
+     }
+      const { username, email, password} =result.data   //Sanitized
      
      try{
        //Check if user exists
