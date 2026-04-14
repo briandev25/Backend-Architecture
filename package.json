@@ -1,0 +1,30 @@
+{
+  "name": "backend-archetecture",
+  "version": "1.0.0",
+  "description": "Implementing the complex nodejs architecture",
+  "license": "ISC",
+  "author": "Bryan Kiprop",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w",
+    "start": "concurrently \"npm run watch\" \"nodemon dist/app.js\""
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.4.1",
+    "zod": "^4.3.6"
+  }
+}
