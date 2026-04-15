@@ -1,6 +1,7 @@
 import type {Request,Response} from 'express'
 import User from '../models/userModel.js';
-import validateNewUser from '../schemas/userSchema.js';
+import { validateNewUser,validateLogin} from '../schemas/userSchema.js'
+import bcrypt from 'bcrypt';
 
 
 export const newUserController = async(req:Request,res:Response) =>{
@@ -25,4 +26,25 @@ export const newUserController = async(req:Request,res:Response) =>{
      }catch(err:any){
           res.status(500).json({message:err.message})
      }
+}
+
+export const loginUserController = async(req:Request,res:Response) =>{
+     const results = validateLogin.safeParse(req.body);
+     if(!results.success){
+          return res.status(400).json({error:results.error.flatten()})
+     }
+    const { email,password } = results.data;
+    try{
+      const userExists = await User.findOne({email});
+      if(!userExists){
+        return res.status(400).json({message:"Username or password is incorrect(no email)"});
+      }
+     const isPasswordCorrect = await bcrypt.compare(password,userExists.password);
+     if(!isPasswordCorrect){
+       return res.status(400).json({message:"Username or password is incorrect(wrong password)"});
+     }
+     res.status(201).json({message:"User logged in successfully"});
+    }catch(err:any){
+        res.status(500).json({message:err.message})
+    }
 }
