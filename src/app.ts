@@ -5,6 +5,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 
 import routes from './routes/index.js';
+import { authenticateToken } from './middlewares/authMiddleware.js'
 
 dotenv.config();
 

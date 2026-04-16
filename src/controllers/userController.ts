@@ -2,6 +2,7 @@ import type {Request,Response} from 'express'
 import User from '../models/userModel.js';
 import { validateNewUser,validateLogin} from '../schemas/userSchema.js'
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 
 export const newUserController = async(req:Request,res:Response) =>{
@@ -43,7 +44,8 @@ export const loginUserController = async(req:Request,res:Response) =>{
      if(!isPasswordCorrect){
        return res.status(400).json({message:"Username or password is incorrect(wrong password)"});
      }
-     res.status(201).json({message:"User logged in successfully"});
+     const token = jwt.sign({id:userExists._id},process.env.ACCESS_TOKEN_SECRET as string);
+     res.status(201).json({accessToken:token,message:"User logged in successfully"});
     }catch(err:any){
         res.status(500).json({message:err.message})
     }
