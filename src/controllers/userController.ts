@@ -1,6 +1,7 @@
 import type {Request,Response} from 'express'
 import User from '../models/userModel.js';
 import { validateNewUser,validateLogin} from '../schemas/userSchema.js'
+import { sendUserEmail } from '../utils/email.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -22,6 +23,8 @@ export const newUserController = async(req:Request,res:Response) =>{
        const newUser = new User({username,email,password});
        //Saving to DB
        await newUser.save();
+           //Send welcome email
+           await sendUserEmail(email,`Welcome ${username}`,"Thank you for registering with our service! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team. Welcome to the community!")
        res.status(201).json({message:"User saved successfully"})
 
      }catch(err:any){
