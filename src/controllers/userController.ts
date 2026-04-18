@@ -1,7 +1,7 @@
 import type {Request,Response} from 'express'
 import User from '../models/userModel.js';
 import { validateNewUser,validateLogin} from '../schemas/userSchema.js'
-import { sendUserEmail } from '../utils/email.js';
+import { sendUserEmail } from '../utils/sendEmail.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -23,9 +23,10 @@ export const newUserController = async(req:Request,res:Response) =>{
        const newUser = new User({username,email,password});
        //Saving to DB
        await newUser.save();
+       const token = jwt.sign({id:newUser._id},process.env.ACCESS_TOKEN_SECRET as string);
+       res.status(201).json({message:"User saved successfully", accessToken:token})
            //Send welcome email
-           await sendUserEmail(email,`Welcome ${username}`,"Thank you for registering with our service! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team. Welcome to the community!")
-       res.status(201).json({message:"User saved successfully"})
+       await sendUserEmail(email,`Welcome ${username}`,"Thank you for registering with our service! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team. Welcome to the community!");   
 
      }catch(err:any){
           res.status(500).json({message:err.message})
@@ -52,4 +53,44 @@ export const loginUserController = async(req:Request,res:Response) =>{
     }catch(err:any){
         res.status(500).json({message:err.message})
     }
+}
+
+
+export const forgotPasswordController = async(req:Request,res:Response) =>{
+   const { email} = req.body;
+   try{
+      const userExists = await User.findOne({email});
+      if(!userExists){
+          return res.status(400).json({message:"User with this email does not exist"});
+      }
+          const resetToken = jwt.sign({id:userExists._id},process.env.ACCESS_TOKEN_SECRET as string,{expiresIn:'1h'});
+          const resetLink = `${process.env.FRONTEND_URL}/api/v1/user/reset-password?token=${resetToken}`;
+          await sendUserEmail(email,"Password Reset Request",`You requested a password reset. Click the link below to reset your password:\n\n${resetLink}\n\nIf you did not request this, please ignore this email.`)
+          res.status(200).json({message:"Password reset email sent successfully",resetToken})
+   }catch(err:any){
+     res.status(500).json({message:err.message})
+   }
+}
+
+export const resetPasswordController = async(req:Request,res:Response) =>{
+  const { newPassword }  = req.body;
+  const{ token } = req.query;
+  if(typeof token !== 'string'){
+    return res.status(400).json({message:"Invalid token(token missing or not a string)"})
+  }
+  if(!newPassword || typeof newPassword !== 'string' || newPassword.length < 6){
+    return res.status(400).json({message:"Invalid new password"})
+  }
+  try{
+    const decoded = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET as string) as {id:string};
+    const userExists = await User.findById(decoded.id);
+    if(!userExists){
+      return res.status(400).json({message:"Invalid token(user not found)"});
+    }
+    userExists.password = newPassword;
+    await userExists.save();
+    res.status(200).json({message:"Password reset successfully"});
+  }catch(err:any){
+    res.status(500).json({message:"Error resetting password: "+err.message})
+  }
 }

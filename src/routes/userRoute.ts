@@ -1,5 +1,5 @@
 import express from 'express';
-import { newUserController,loginUserController } from '../controllers/userController.js';
+import { newUserController,loginUserController,forgotPasswordController,resetPasswordController } from '../controllers/userController.js';
 
 
 
@@ -74,7 +74,11 @@ route.post('/register',newUserController);
  *         description: Invalid email or password
  */
 
-route.post('/login',loginUserController)
+route.post('/login',loginUserController);
+
+route.post('/forgot-password',forgotPasswordController);
+
+route.post('/reset-password',resetPasswordController);
 
 
 
