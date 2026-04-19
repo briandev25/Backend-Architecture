@@ -1,5 +1,6 @@
 import express from 'express';
 import { newUserController,loginUserController,forgotPasswordController,resetPasswordController } from '../controllers/userController.js';
+import{ forgotPasswordLimiter,resetPasswordLimiter } from '../middlewares/rateLimiter.js'
 
 
 
@@ -76,9 +77,61 @@ route.post('/register',newUserController);
 
 route.post('/login',loginUserController);
 
-route.post('/forgot-password',forgotPasswordController);
 
-route.post('/reset-password',resetPasswordController);
+/**
+ * @swagger
+ * /api/v1/user/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     description: Sends a password reset link to the user's email
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: johndoe@example.com
+ *     responses:
+ *       200:
+ *         description: Password reset link sent successfully
+ *       400:
+ *         description: Invalid email
+ */
+route.post('/forgot-password',forgotPasswordLimiter,forgotPasswordController);
+
+
+/**
+ * @swagger
+ * /api/v1/user/reset-password:
+ *   post:
+ *     summary: Reset user password
+ *     description: Allows user to reset their password using a reset token
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newPassword
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 example: newstrongpassword123
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid or expired reset token
+ */
+route.post('/reset-password',resetPasswordLimiter,resetPasswordController);
 
 
 
