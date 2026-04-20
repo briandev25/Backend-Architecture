@@ -17,3 +17,9 @@ export const validateLogin = z.object({
     .min(6, "Password must be at least 6 characters")
     .transform((val) => val.trim()),
 });
+
+export const validateProfileUpdate = z.object({
+  bio: z.string().max(160, "Bio cannot exceed 160 characters").optional(),
+  avatarUrl: z.string().url("Invalid URL format").optional(),
+  location: z.string().max(100, "Location cannot exceed 100 characters").optional(),
+});

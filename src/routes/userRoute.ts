@@ -1,6 +1,13 @@
 import express from 'express';
-import { newUserController,loginUserController,forgotPasswordController,resetPasswordController } from '../controllers/userController.js';
+import { 
+newUserController,
+loginUserController,
+forgotPasswordController,
+resetPasswordController,
+addProfileController
+ } from '../controllers/userController.js';
 import{ forgotPasswordLimiter,resetPasswordLimiter } from '../middlewares/rateLimiter.js'
+import { authenticateToken} from '../middlewares/authMiddleware.js'
 
 
 
@@ -133,6 +140,42 @@ route.post('/forgot-password',forgotPasswordLimiter,forgotPasswordController);
  */
 route.post('/reset-password',resetPasswordLimiter,resetPasswordController);
 
+/**
+ * @swagger
+ * /api/v1/user/profile:
+ *   post:
+ *     summary: Add user profile
+ *     description: Adds a new profile for the logged-in user
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - bio
+ *               - avatarUrl
+ *               - location
+ *             properties:
+ *               bio:
+ *                 type: string
+ *                 example: Software developer passionate about creating innovative solutions.
+ *               avatarUrl:
+ *                 type: string
+ *                 example: https://example.com/avatar.jpg
+ *               location:
+ *                 type: string
+ *                 example: New York, USA
+ *     responses:
+ *       201:
+ *         description: Profile added successfully
+ *       400:
+ *         description: Bad request
+ */
+route.post('/profile',authenticateToken,addProfileController);
 
 
 

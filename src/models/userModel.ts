@@ -28,14 +28,16 @@ const userSchema = new Schema({
         validate:{
             validator:(value:string) => passwordRegex.test(value),
             message: "Password must include uppercase, lowercase, and a number"
-        }
+        },
+       
     },
     
     date:{
         type:Date,
         default:Date.now
     }
-});
+},{timestamps:true}
+);
 
 userSchema.pre('save', async function(next){
    //We only hash if password is new or modified
