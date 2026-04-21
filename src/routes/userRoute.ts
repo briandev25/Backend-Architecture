@@ -4,7 +4,8 @@ newUserController,
 loginUserController,
 forgotPasswordController,
 resetPasswordController,
-addProfileController
+addProfileController,
+getProfileController
  } from '../controllers/userController.js';
 import{ forgotPasswordLimiter,resetPasswordLimiter } from '../middlewares/rateLimiter.js'
 import { authenticateToken} from '../middlewares/authMiddleware.js'
@@ -177,6 +178,25 @@ route.post('/reset-password',resetPasswordLimiter,resetPasswordController);
  */
 route.post('/profile',authenticateToken,addProfileController);
 
+
+/** * @swagger
+ * /api/v1/user/profile:
+ *   get:
+ *     summary: Get user profile
+ *     description: Retrieves the profile information for the logged-in user
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile retrieved successfully
+ *         content:
+ *           application/json:
+ *       400:
+ *         description: Profile not found for this user
+ */
+
+route.get('/profile',authenticateToken,getProfileController);
 
 
 export default route;

@@ -82,6 +82,19 @@ export const addProfileController = async(req:Request,res:Response) =>{
   }
 }
 
+export const getProfileController = async(req:Request,res:Response) =>{
+  try{
+      const profile = await Profile.findOne({user:req.user.id}).populate('user','username email -_id');
+      if(!profile){
+        return res.status(400).json({message:"Profile not found for this user"})
+      }
+      res.status(200).json({message:"Profile found", profile});
+
+  }catch(err:any){
+    res.status(500).json({message:"Could not get user profile:"+ err.message})
+  }
+}
+
 export const forgotPasswordController = async(req:Request,res:Response) =>{
    const { email} = req.body;
    try{
