@@ -5,7 +5,8 @@ loginUserController,
 forgotPasswordController,
 resetPasswordController,
 addProfileController,
-getProfileController
+getProfileController,
+deleteUserController
  } from '../controllers/userController.js';
 import{ forgotPasswordLimiter,resetPasswordLimiter } from '../middlewares/rateLimiter.js'
 import { authenticateToken} from '../middlewares/authMiddleware.js'
@@ -197,6 +198,24 @@ route.post('/profile',authenticateToken,addProfileController);
  */
 
 route.get('/profile',authenticateToken,getProfileController);
+
+
+/**
+ * @swagger
+ * /api/v1/user/delete:
+ *   delete:
+ *     summary: Delete user account
+ *     description: Deletes the logged-in user's account
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       404:
+ *         description: User not found
+ */
+route.delete('/delete',authenticateToken,deleteUserController);
 
 
 export default route;
