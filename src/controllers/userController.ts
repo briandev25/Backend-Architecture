@@ -50,12 +50,25 @@ export const loginUserController = async(req:Request,res:Response) =>{
      if(!isPasswordCorrect){
        return res.status(400).json({message:"Username or password is incorrect(wrong password)"});
      }
+
+     //Creating JWT and storing in cookie
      const payload = {id:userExists._id,username:userExists.username,email};
-     const token = jwt.sign(payload,process.env.ACCESS_TOKEN_SECRET as string);
+     const token = jwt.sign(payload,process.env.ACCESS_TOKEN_SECRET as string,{expiresIn:'1hr'});
+
+     res.cookie("token",token,{
+      httpOnly:true,
+      maxAge:3600000, //1hr
+     })
+
      res.status(201).json({accessToken:token,message:"User logged in successfully"});
     }catch(err:any){
         res.status(500).json({message:err.message})
     }
+}
+
+export const logoutUserController = (req:Request,res:Response) =>{
+  res.clearCookie("token");
+  res.status(200).json({message:"User logged out successfully"});
 }
 
 export const addProfileController = async(req:Request,res:Response) =>{

@@ -11,8 +11,8 @@ declare global {
 
 
 export const authenticateToken =(req:Request,res:Response,next:NextFunction)  =>{
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+   
+    const token = req.cookies.token as string | undefined;
     if(!token){
         return res.status(401).json({message:"Access token is missing"});
     }

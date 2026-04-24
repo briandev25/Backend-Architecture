@@ -2,6 +2,7 @@ import express from 'express';
 import { 
 newUserController,
 loginUserController,
+logoutUserController,
 forgotPasswordController,
 resetPasswordController,
 addProfileController,
@@ -85,6 +86,24 @@ route.post('/register',newUserController);
  */
 
 route.post('/login',loginUserController);
+
+/**
+ * @swagger
+ * /api/v1/user/logout:
+ *  post:
+ *    summary: Logout user
+ *   description: Logs out the user by clearing the authentication cookie
+ *   tags: [User]
+ *  responses:
+ *    200:
+ *     description: User logged out successfully
+ *   400:
+ *    description: Bad request
+ * */
+
+
+route.post('/logout',logoutUserController);
+
 
 
 /**

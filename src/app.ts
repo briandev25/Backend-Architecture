@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv';
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
 
 import routes from './routes/index.js';
 
@@ -27,6 +28,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 
 app.use(express.json());
+app.use(cookieParser())
 app.use('/api/v1',routes);
 app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocs));
 
